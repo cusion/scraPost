@@ -24,7 +24,7 @@ LOG_LEVEL = 'INFO'
 
 DOWNLOAD_DELAY = 2
 RETRY_TIMES = 10
-RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408, 502]
 
 DOWNLOADER_MIDDLEWARES = {
                         'scrapy.contrib.downloadermiddleware.retry.RetryMiddleware' : 300,

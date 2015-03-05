@@ -7,6 +7,7 @@ from scraPost.items import ScrapostItem
 from scrapy import log
 
 import urllib
+import traceback
 
 
 __author__ = "Kui Xiong"
@@ -64,11 +65,11 @@ class PostSpider(CrawlSpider):
             new_request.dont_filter = True
             yield new_request
         else:
-#             file = open("C:/Users/Dell/Desktop/test/page_%s.html"%str(self.page_count), "w")
-#             for line in sel.extract():
-#                 file.write(line.encode("utf-8"))
-#             file.close()
-#             self.page_count = self.page_count + 1
+            file = open("C:/Users/Dell/Desktop/test/page_%s.html"%str(self.page_count), "w")
+            for line in sel.extract():
+                file.write(line.encode("utf-8"))
+            file.close()
+            self.page_count = self.page_count + 1
             
             log.msg("page length is " + str(len(sel.extract())))
             next_formdata = self.formdata.copy()
@@ -92,15 +93,21 @@ class PostSpider(CrawlSpider):
                 end =  body.find("Next")
                 if start >= end:
                     hasNext = False
-                body = body[start:end]
-                mat = re.match(r".*?%5C'(.*?)%5C.*%5C'(.*?)%5C'", body)
-                next_formdata["__EVENTTARGET"] = urllib.unquote(mat.group(1))
-                next_formdata["__EVENTARGUMENT"] = urllib.unquote(mat.group(2))
-                start = body.find("__VIEWSTATE")
-    #             print start
-                end = body.find("|", start+12)
-    #             print end
-                viewstate =  body[start+12:end]
+                else:
+                    try:
+                        next_js = body[start:end]
+                        mat = re.match(r".*?%5C'(.*?)%5C.*%5C'(.*?)%5C'", next_js)
+                        next_formdata["__EVENTTARGET"] = urllib.unquote(mat.group(1))
+                        next_formdata["__EVENTARGUMENT"] = urllib.unquote(mat.group(2))
+                        start = body.find("__VIEWSTATE")
+            #             print start
+                        end = body.find("|", start+12)
+            #             print end
+                        viewstate =  body[start+12:end]
+                    except Exception, e:
+                        hasNext = False
+                        print(e)
+                        print(traceback.format_exc())
                 
             if hasNext:
                 next_formdata["__VIEWSTATE"] = urllib.unquote(viewstate)
@@ -136,11 +143,11 @@ class PostSpider(CrawlSpider):
             new_request.dont_filter = True
             yield new_request
         else:
-#             file = open("C:/Users/Dell/Desktop/test/itme_%s.html"%str(self.item_count), "w")
-#             for line in sel.extract():
-#                 file.write(line.encode("utf-8"))
-#             file.close()
-#             self.item_count = self.item_count + 1
+            file = open("C:/Users/Dell/Desktop/test/itme_%s.html"%str(self.item_count), "w")
+            for line in sel.extract():
+                file.write(line.encode("utf-8"))
+            file.close()
+            self.item_count = self.item_count + 1
             
             log.msg("item length is " + str(len(sel.extract())))
             item = ScrapostItem()
